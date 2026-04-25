@@ -17,13 +17,9 @@ const Login = () => {
     e.preventDefault();
     try {
       const response = await api.post("/auth/login", form);
-      console.log(response.data);
       localStorage.setItem("automation-agent-token", response.data.token);
-      alert("User logged in successfully");
       navigate("/");
     } catch (error) {
-      console.log(error);
-      alert("Error logging in user");
       navigate("/login");
     }
   };

@@ -3,17 +3,20 @@ import { createBrowserRouter, RouterProvider} from "react-router-dom"
 import Sigup from './pages/Sigup'
 import Home from './pages/Home'
 import Login from './pages/Login'
+import CampaignWizard from './pages/CampaignWizard/index'
+import LeadTable from './pages/LeadTable'
 
 const router = createBrowserRouter([
   {path:"/", element: <Home />},
   {path:"/signup", element: <Sigup />},
   {path:"/login", element: <Login />},
-  
+  {path:"/create-campaign", element: <CampaignWizard />},
+  {path:"/campaign/:id/leads", element: <LeadTable />},
 ])
 
 const App = () => {
   return (
-    <div className='min-h-screen bg-[#0f172a] bg-[radial-gradient(circle_at_top_left,#1e293b_0%,#0f172a_100%)] text-white flex items-center justify-center p-4'>
+    <div className='min-h-screen'>
       <RouterProvider router={router} />
     </div>
 

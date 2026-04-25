@@ -19,12 +19,8 @@ const Sigup = () => {
 
     try {
       const response = await api.post("/auth/signup", form);
-      console.log(response.data);
-      alert("User registered successfully");
       navigate("/login");
     } catch (error) {
-      console.log(error);
-      alert("Error registering user");
       navigate("/signup")
     }
   };

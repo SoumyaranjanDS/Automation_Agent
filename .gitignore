@@ -5,6 +5,7 @@ node_modules/
 
 # Testing
 coverage/
+uploads/
 
 # Production
 dist/
@@ -31,3 +32,13 @@ yarn-error.log*
 # OS files
 .DS_Store
 Thumbs.db
+
+# Python
+venv/
+.venv/
+env/
+bin/
+lib/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
