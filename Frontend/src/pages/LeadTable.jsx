@@ -9,6 +9,9 @@ import {
   Zap,
   X,
   RefreshCw,
+  Edit3,
+  Check,
+  Save,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 
@@ -32,6 +35,10 @@ const LeadTable = () => {
   const [campaign, setCampaign] = useState(null);
   const [selectedLead, setSelectedLead] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedSubject, setEditedSubject] = useState("");
+  const [editedBody, setEditedBody] = useState("");
+  const [saving, setSaving] = useState(false);
 
   const fetchLeads = async (page = 1) => {
     setLoading(true);
@@ -65,15 +72,49 @@ const LeadTable = () => {
   const handleLeadClick = async (lead) => {
     try {
       setSelectedLead(lead);
+      setIsEditing(false); // Reset editing mode when switching leads
 
       const response = await api.get(`/campaigns/${id}/leads/${lead._id}`);
 
       setSelectedLead(response.data);
+      // Initialize edit states
+      setEditedSubject(response.data.generatedEmail?.subject || "");
+      setEditedBody(response.data.generatedEmail?.body || "");
     } catch (err) {
       console.error(
         "Failed to fetch latest lead data:",
         err.response?.data || err.message,
       );
+    }
+  };
+
+  const handleSaveEmail = async () => {
+    if (!selectedLead) return;
+    setSaving(true);
+
+    try {
+      const response = await api.patch(`/campaigns/leads/${selectedLead._id}/email`, {
+        subject: editedSubject,
+        body: editedBody,
+        status: "active", // Mark as active/approved once edited
+      });
+
+      if (response.data.success) {
+        setSelectedLead(response.data.lead);
+        setIsEditing(false);
+        // Update the lead in the main list
+        setLeads((prev) =>
+          prev.map((l) =>
+            l._id === selectedLead._id ? response.data.lead : l,
+          ),
+        );
+        alert("Email saved successfully!");
+      }
+    } catch (err) {
+      console.error("Failed to save email:", err.response?.data || err.message);
+      alert("Failed to save email.");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -458,43 +499,112 @@ const LeadTable = () => {
 
             {/* Modal Body */}
             <div className="flex-1 overflow-y-auto p-8 space-y-6">
-              <div className="space-y-1">
-                <label className="text-[10px] font-black text-blue-500 uppercase tracking-widest">
-                  Subject Line
-                </label>
+              {isEditing ? (
+                <div className="space-y-6 animate-in slide-in-from-bottom-2 duration-300">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-blue-500 uppercase tracking-widest">
+                      Subject Line
+                    </label>
+                    <input
+                      type="text"
+                      value={editedSubject}
+                      onChange={(e) => setEditedSubject(e.target.value)}
+                      className="w-full p-4 border border-blue-100 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none font-bold text-slate-900 bg-blue-50/30"
+                      placeholder="Enter subject line..."
+                    />
+                  </div>
 
-                <p className="text-xl font-bold text-slate-900 leading-tight">
-                  {selectedLead.generatedEmail?.subject ||
-                    "No Subject Drafted Yet"}
-                </p>
-              </div>
-
-              <div className="h-px bg-slate-100" />
-
-              <div className="space-y-1">
-                <label className="text-[10px] font-black text-blue-500 uppercase tracking-widest">
-                  Email Body
-                </label>
-
-                <div className="prose prose-slate max-w-none text-slate-700 leading-relaxed">
-                  <ReactMarkdown>
-                    {selectedLead.generatedEmail?.body ||
-                      "The AI is still drafting this email. Please click Generate if you have not already."}
-                  </ReactMarkdown>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-blue-500 uppercase tracking-widest">
+                      Email Body
+                    </label>
+                    <textarea
+                      value={editedBody}
+                      onChange={(e) => setEditedBody(e.target.value)}
+                      rows={12}
+                      className="w-full p-6 border border-blue-100 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none text-slate-700 leading-relaxed bg-blue-50/10 font-sans"
+                      placeholder="Write your email body here..."
+                    />
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-black text-blue-500 uppercase tracking-widest">
+                      Subject Line
+                    </label>
+
+                    <p className="text-xl font-bold text-slate-900 leading-tight">
+                      {selectedLead.generatedEmail?.subject ||
+                        "No Subject Drafted Yet"}
+                    </p>
+                  </div>
+
+                  <div className="h-px bg-slate-100" />
+
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-black text-blue-500 uppercase tracking-widest">
+                      Email Body
+                    </label>
+
+                    <div className="prose prose-slate max-w-none text-slate-700 leading-relaxed">
+                      <ReactMarkdown>
+                        {selectedLead.generatedEmail?.body ||
+                          "The AI is still drafting this email. Please click Generate if you have not already."}
+                      </ReactMarkdown>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Modal Footer */}
-            <div className="p-6 bg-slate-50 border-t border-slate-100 flex justify-end space-x-3">
-              <Button variant="outline" onClick={() => setSelectedLead(null)}>
-                Close Preview
-              </Button>
+            <div className="p-6 bg-slate-50 border-t border-slate-100 flex justify-between items-center">
+              <div>
+                {isEditing ? (
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setIsEditing(false);
+                      setEditedSubject(selectedLead.generatedEmail?.subject || "");
+                      setEditedBody(selectedLead.generatedEmail?.body || "");
+                    }}
+                  >
+                    Cancel Editing
+                  </Button>
+                ) : (
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsEditing(true)}
+                    disabled={!hasGeneratedEmail(selectedLead)}
+                  >
+                    <Edit3 size={16} className="mr-2" />
+                    Edit Draft
+                  </Button>
+                )}
+              </div>
 
-              <Button disabled={!hasGeneratedEmail(selectedLead)}>
-                <Zap size={16} className="mr-2" />
-                Use This Draft
-              </Button>
+              <div className="flex space-x-3">
+                <Button variant="outline" onClick={() => setSelectedLead(null)}>
+                  Close
+                </Button>
+
+                {isEditing ? (
+                  <Button onClick={handleSaveEmail} disabled={saving}>
+                    {saving ? (
+                      <RefreshCw size={16} className="mr-2 animate-spin" />
+                    ) : (
+                      <Save size={16} className="mr-2" />
+                    )}
+                    Save Changes
+                  </Button>
+                ) : (
+                  <Button onClick={handleSaveEmail} disabled={!hasGeneratedEmail(selectedLead)}>
+                    <Check size={16} className="mr-2" />
+                    Approve Draft
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
         </div>

@@ -27,8 +27,11 @@ const handleUserSignup = async (req, res) => {
         password: hashPassword,
     })
 
+    const token = generateToken({ id: user._id })
+
     return res.status(201).json({
         message: "User created successfully",
+        token,
         user,
     })
 }

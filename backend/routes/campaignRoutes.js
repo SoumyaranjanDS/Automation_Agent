@@ -8,7 +8,8 @@ const {
     confirmCSVUpload,
     getCampaignLeads,
     getLeadById,
-    startGeneration
+    startGeneration,
+    updateLeadEmail
 } = require("../controllers/campaignController");
 const auth = require("../middleware/auth");
 const upload = require("../utils/multerConfig");
@@ -33,5 +34,6 @@ router.get("/:id/leads/:leadId", getLeadById);
 
 // Generation
 router.post("/:id/generate", startGeneration);
+router.patch("/leads/:leadId/email", updateLeadEmail);
 
 module.exports = router;

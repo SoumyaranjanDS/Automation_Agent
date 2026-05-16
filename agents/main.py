@@ -127,5 +127,5 @@ async def health_check():
     }
 
 if __name__ == "__main__":
-    print("🚀 AutomationAgent AI Intelligence Service starting...")
+    print("AutomationAgent AI Intelligence Service starting...")
     uvicorn.run(app, host="0.0.0.0", port=8001)

@@ -182,6 +182,32 @@ async function getLeadById(req, res) {
     }
 }
 
+const updateLeadEmail = async (req, res) => {
+    try {
+        const { leadId } = req.params;
+        const { subject, body, status } = req.body;
+
+        const lead = await Lead.findById(leadId);
+        if (!lead) return res.status(404).json({ message: "Lead not found" });
+
+        // Update email content
+        lead.generatedEmail = {
+            subject: subject || lead.generatedEmail?.subject,
+            body: body || lead.generatedEmail?.body
+        };
+
+        // If user is confirming/approving, update status
+        if (status) {
+            lead.status = status;
+        }
+
+        await lead.save();
+        res.status(200).json({ success: true, lead });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 async function getCampaignLeads(req, res) {
     try {
         const { id } = req.params;
@@ -233,5 +259,6 @@ module.exports = {
     confirmCSVUpload,
     getCampaignLeads,
     getLeadById,
-    startGeneration
+    startGeneration,
+    updateLeadEmail
 };
