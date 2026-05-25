@@ -40,16 +40,17 @@ const Navbar = () => {
 
             {/* Desktop Nav Links */}
             <div className="hidden md:flex items-center space-x-8">
-              <div className="flex items-center gap-1 cursor-pointer group">
-                <span className="text-[15px] font-medium text-gray-700 group-hover:text-gray-900">Product</span>
-                <ChevronDown size={14} className="text-gray-500 group-hover:text-gray-900 mt-0.5" />
-              </div>
-              <div className="flex items-center gap-1 cursor-pointer group">
-                <span className="text-[15px] font-medium text-gray-700 group-hover:text-gray-900">Resources</span>
-                <ChevronDown size={14} className="text-gray-500 group-hover:text-gray-900 mt-0.5" />
-              </div>
-              <Link to="#" className="text-[15px] font-medium text-gray-700 hover:text-gray-900">
-                Customers
+              <Link to="/product" className="text-[15px] font-medium text-gray-700 hover:text-gray-900">
+                Product
+              </Link>
+              <Link to="/use-cases" className="text-[15px] font-medium text-gray-700 hover:text-gray-900">
+                Use Cases
+              </Link>
+              <Link to="/about" className="text-[15px] font-medium text-gray-700 hover:text-gray-900">
+                About
+              </Link>
+              <Link to="/contact" className="text-[15px] font-medium text-gray-700 hover:text-gray-900">
+                Contact
               </Link>
             </div>
           </div>
@@ -103,16 +104,17 @@ const Navbar = () => {
             className="md:hidden bg-white border-t border-gray-100 overflow-hidden"
           >
             <div className="px-6 pt-4 pb-8 space-y-4 flex flex-col">
-              <div className="flex justify-between items-center py-2 border-b border-gray-50">
-                <span className="text-[16px] font-medium text-gray-900">Product</span>
-                <ChevronDown size={16} className="text-gray-500" />
-              </div>
-              <div className="flex justify-between items-center py-2 border-b border-gray-50">
-                <span className="text-[16px] font-medium text-gray-900">Resources</span>
-                <ChevronDown size={16} className="text-gray-500" />
-              </div>
-              <Link to="#" className="text-[16px] font-medium text-gray-900 py-2 border-b border-gray-50 block">
-                Customers
+              <Link to="/product" className="text-[16px] font-medium text-gray-900 py-2 border-b border-gray-50 block" onClick={() => setIsOpen(false)}>
+                Product
+              </Link>
+              <Link to="/use-cases" className="text-[16px] font-medium text-gray-900 py-2 border-b border-gray-50 block" onClick={() => setIsOpen(false)}>
+                Use Cases
+              </Link>
+              <Link to="/about" className="text-[16px] font-medium text-gray-900 py-2 border-b border-gray-50 block" onClick={() => setIsOpen(false)}>
+                About
+              </Link>
+              <Link to="/contact" className="text-[16px] font-medium text-gray-900 py-2 border-b border-gray-50 block" onClick={() => setIsOpen(false)}>
+                Contact
               </Link>
               
               <div className="pt-4 flex flex-col gap-3">

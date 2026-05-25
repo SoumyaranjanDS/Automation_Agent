@@ -8,7 +8,10 @@ import CampaignWizard from './pages/CampaignWizard/index'
 import LeadTable from './pages/LeadTable'
 import Layout from './components/Layout'
 
-// import Pricing from './pages/Pricing'
+import Product from './pages/Product'
+import UseCases from './pages/UseCases'
+import About from './pages/About'
+import Contact from './pages/Contact'
 
 const router = createBrowserRouter([
   {
@@ -16,6 +19,10 @@ const router = createBrowserRouter([
     element: <Layout />,
     children: [
       { path: "/", element: <Home /> },
+      { path: "/product", element: <Product /> },
+      { path: "/use-cases", element: <UseCases /> },
+      { path: "/about", element: <About /> },
+      { path: "/contact", element: <Contact /> },
       { path: "/dashboard", element: <Dashboard /> },
       { path: "/create-campaign", element: <CampaignWizard /> },
       { path: "/campaign/:id/leads", element: <LeadTable /> },
