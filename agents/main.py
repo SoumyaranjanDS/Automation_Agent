@@ -6,6 +6,10 @@ from agents.writer import (
     get_investment_banker_agent, 
     get_financial_advisor_agent
 )
+from agents.lead_intelligence import get_lead_intelligence_agent
+from agents.strategy import get_strategy_agent
+from agents.critic import get_critic_agent
+from agents.followup import get_followup_agent
 import uvicorn
 import os
 import json
@@ -74,6 +78,30 @@ class WriterRequest(BaseModel):
     instruction: str
     lead_name: str
 
+class IntelligenceRequest(BaseModel):
+    model_config = {'protected_namespaces': ()}
+    name: str
+    email: str
+    role: str
+    company: str
+    description: str
+    linkedin_snippet: str = ""
+
+class StrategyRequest(BaseModel):
+    model_config = {'protected_namespaces': ()}
+    campaign_strategy: str
+    lead_profile: str
+
+class CriticRequest(BaseModel):
+    model_config = {'protected_namespaces': ()}
+    draft_email: str
+    outreach_strategy: str
+
+class FollowupRequest(BaseModel):
+    model_config = {'protected_namespaces': ()}
+    previous_email: str
+    outcome_event: str
+
 @app.post("/api/agents/plan")
 async def plan_campaign(request: PlannerRequest):
     try:
@@ -116,6 +144,58 @@ async def generate_email(request: WriterRequest):
         return parse_ai_response(response.content)
     except Exception as e:
         print(f"Error in Generation Pipeline: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/agents/intelligence")
+async def lead_intelligence(request: IntelligenceRequest):
+    try:
+        agent = get_lead_intelligence_agent()
+        prompt = (
+            f"Analyze this lead: Name: {request.name}, Email: {request.email}, Role: {request.role}, "
+            f"Company: {request.company}, Description: {request.description}, LinkedIn: {request.linkedin_snippet}"
+        )
+        response = agent.run(prompt)
+        return parse_ai_response(response.content)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/agents/strategy")
+async def strategy(request: StrategyRequest):
+    try:
+        agent = get_strategy_agent()
+        prompt = (
+            f"Campaign Strategy: {request.campaign_strategy}\n"
+            f"Lead Profile: {request.lead_profile}"
+        )
+        response = agent.run(prompt)
+        return parse_ai_response(response.content)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/agents/critic")
+async def critic(request: CriticRequest):
+    try:
+        agent = get_critic_agent()
+        prompt = (
+            f"Draft Email: {request.draft_email}\n"
+            f"Outreach Strategy: {request.outreach_strategy}"
+        )
+        response = agent.run(prompt)
+        return parse_ai_response(response.content)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/agents/followup")
+async def followup(request: FollowupRequest):
+    try:
+        agent = get_followup_agent()
+        prompt = (
+            f"Previous Email: {request.previous_email}\n"
+            f"Outcome Event: {request.outcome_event}"
+        )
+        response = agent.run(prompt)
+        return parse_ai_response(response.content)
+    except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/health")
