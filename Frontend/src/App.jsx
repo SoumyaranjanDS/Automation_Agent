@@ -8,6 +8,8 @@ import CampaignWizard from './pages/CampaignWizard/index'
 import LeadTable from './pages/LeadTable'
 import Layout from './components/Layout'
 
+// import Pricing from './pages/Pricing'
+
 const router = createBrowserRouter([
   {
     path: "/",

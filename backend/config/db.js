@@ -7,7 +7,7 @@ const connectDB = async () => {
         const connect = await mongoose.connect(process.env.MONGO_URI, {
             dbName: "automation_agent"
         });
-        console.log(`MongoDB Connected : ${connect.connection.host}`);
+        console.log("MongoDB connected");
     } catch (error) {
         console.log(error);
         process.exit(1);
